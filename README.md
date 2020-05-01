@@ -54,6 +54,3 @@ Nice to have:
 
 - Logs routed to Cloudwatch
 - Documentation on approach to shipping updates to the solution with minimal / no downtime
-
-
-Once completed, please email the solution over to brenna.flood at splice.com.
