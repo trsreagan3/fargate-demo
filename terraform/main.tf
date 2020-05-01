@@ -1,6 +1,7 @@
 locals {
 	//in a larger project we  would want these variables in a separate file 
 	name = "hello-world"
+	log_name = "hello-log"
 	port = 80
 	alb_port = 8080
 }
@@ -242,6 +243,61 @@ resource "aws_alb_listener" "hello-world" {
     type = "forward"
     target_group_arn = aws_lb_target_group.hello-world.arn
   }
+}
+
+resource "aws_flow_log" "log" {
+  iam_role_arn    = aws_iam_role.log.arn
+  log_destination = aws_cloudwatch_log_group.log.arn
+  traffic_type    = "ALL"
+  vpc_id          = aws_vpc.vpc.id
+}
+
+resource "aws_cloudwatch_log_group" "log" {
+  name = local.log_name
+}
+
+resource "aws_iam_role" "log" {
+  name = local.log_name
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "vpc-flow-logs.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "log" {
+  name = local.log_name
+  role = aws_iam_role.log.id
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
 }
 
 output "alb_endpoint" {

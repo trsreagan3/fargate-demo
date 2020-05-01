@@ -1,10 +1,10 @@
 node {
     stage 'get repo'
-       git clone 
-    stage 'Stage 2'
-       echo 'Hello World 2'
-    stage 'Stage 3'
-       echo 'Hello World 3'
-    stage 'Stage 4'
-       echo 'Hello World 4'
+       git clone  https://github.com/trsreagan3/fargate-demo ./fargate-demo
+    stage 'enter repo'
+       cd fargate-demo
+    stage 'terraform init'
+       terraform init
+    stage 'terraform apply'
+       terraform apply -auto-approve
 }
